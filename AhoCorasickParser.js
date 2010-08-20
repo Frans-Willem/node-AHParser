@@ -1,36 +1,3 @@
-var sys=require("sys");
-
-var nodes=[],i;
-for (i=0; i<10; i++) { nodes[i]={index:i}; }
-nodes[0][104]=nodes[1];
-nodes[0][115]=nodes[2];
-nodes[1].fail=nodes[0];
-nodes[1][101]=nodes[3];
-nodes[1][105]=nodes[4];
-nodes[2].fail=nodes[0];
-nodes[2][104]=nodes[5];
-nodes[3].used=2;
-nodes[3].out=[1];
-nodes[3].fail=nodes[0];
-nodes[3][114]=nodes[6];
-nodes[4].fail=nodes[0];
-nodes[4][115]=nodes[7];
-nodes[5].fail=nodes[1];
-nodes[5][101]=nodes[8];
-nodes[6].fail=nodes[0];
-nodes[6][115]=nodes[9];
-nodes[7].used=3;
-nodes[7].out=[3];
-nodes[7].fail=nodes[2];
-nodes[8].used=3;
-nodes[8].out=[2,1];
-nodes[8].fail=nodes[3];
-nodes[9].used=4;
-nodes[9].out=[4];
-nodes[9].fail=nodes[2];
-for (i=0; i<0xFFFF; i++) { if (!nodes[0][i]) { nodes[0][i]=nodes[0]; } }
-
-
 function AhoCorasickParser(automaton) {
 	this.root=automaton[0];
 	this.state=this.root;
