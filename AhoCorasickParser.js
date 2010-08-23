@@ -1,5 +1,5 @@
 function AhoCorasickParser(automaton) {
-	this.root=automaton[0];
+	this.root=automaton;
 	this.state=this.root;
 	this.unused=[];
 	this.unusedStart=0;
@@ -9,19 +9,15 @@ AhoCorasickParser.prototype.parse=function(buffer) {
 	if (buffer.length<1) {
 		return;
 	}
-	var unusedStart=this.unusedStart;
-	var lastRootSeen=unusedStart-1;
-	var out=[];
-	var index,chr,s,e,i,u,ue;
+	var unusedStart=this.unusedStart,
+		lastRootSeen=unusedStart-1,
+		out=[],
+		index,s,e,i,u,ue;
+	function rootCallback() {
+		lastRootSeen=index;
+	}
 	for (index=0; index<buffer.length; index++) {
-		chr=buffer[index];
-		while (!this.state[chr]) {
-			this.state=this.state.fail;
-		}
-		if (this.state===this.root) {
-			lastRootSeen=index;
-		}
-		this.state=this.state[chr];
+		this.state=this.state(buffer[index],rootCallback);
 		if (this.state.used) {
 			s=unusedStart;
 			e=index-(this.state.used-1);

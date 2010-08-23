@@ -86,30 +86,38 @@ function assignIndices(root) {
 }
 
 function outputAutomaton(nodes,name) {
-	var reNum=/^[0-9]+$/;
-	var ret=[],n,i,a,g;
+	var ret=[],
+		i,n,a,g,
+		reNum=/^[0-9]+$/;
 	ret.push("function "+name+"() {");
-	ret.push("\tvar nodes=[],i;");
-	ret.push("\tfor (i=0; i<"+nodes.length+"; i++) { nodes[i]={}; }");
 	for (i=0; i<nodes.length; i++) {
 		n=nodes[i];
-		if (n.out) {
-			ret.push("\tnodes["+n.index+"].used="+Math.max.apply(Math,n.out.map(function(x) { return x.length; }))+";");
-			ret.push("\tnodes["+n.index+"].out="+JSON.stringify(n.out.map(function(x) { return x.value; }))+";");
+		ret.push("\tfunction node"+i+"(data,cbRoot) {");
+		if (i===0) {
+			ret.push("\t\tcbRoot();");
 		}
-		if (n.fail) {
-			ret.push("\tnodes["+n.index+"].fail=nodes["+n.fail.index+"];");
-		}
+		ret.push("\t\tswitch (data) {");
 		for (a in n) {if (a.match(reNum)!==null) {
 			g=n[a];
-			if (g===n && n.index===0) {
+			if (g===n && i===0) {
 				continue;
 			}
-			ret.push("\tnodes["+n.index+"]["+a+"]=nodes["+g.index+"];");
+			ret.push("\t\t\tcase "+a+": return node"+g.index+";");
 		}}
+		if (i===0) {
+			ret.push("\t\t\tdefault: return node0;");
+		} else {
+			ret.push("\t\t\tdefault: return node"+n.fail.index+"(data,cbRoot);");
+		}
+		ret.push
+		ret.push("\t\t}");
+		ret.push("\t}");
+		if (n.out) {
+			ret.push("\tnode"+n.index+".used="+Math.max.apply(Math,n.out.map(function(x) { return x.length; }))+";");
+			ret.push("\tnode"+n.index+".out="+JSON.stringify(n.out.map(function(x) { return x.value; }))+";");
+		}
 	}
-	ret.push("\tfor (i=0; i<0xFFFF; i++) { if (!nodes[0][i]) { nodes[0][i]=nodes[0]; } }");
-	ret.push("\treturn nodes[0];");
+	ret.push("\treturn node0;");
 	ret.push("}");
 	return ret;
 }
