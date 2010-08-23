@@ -114,7 +114,7 @@ function outputAutomaton(nodes,name) {
 		ret.push("\t}");
 		if (n.out) {
 			ret.push("\tnode"+n.index+".used="+Math.max.apply(Math,n.out.map(function(x) { return x.length; }))+";");
-			ret.push("\tnode"+n.index+".out="+JSON.stringify(n.out.map(function(x) { return x.value; }))+";");
+			ret.push("\tnode"+n.index+".out=["+n.out.map(function(x) { return x.value; }).join(",")+"];");
 		}
 	}
 	ret.push("\treturn node0;");

@@ -5,7 +5,7 @@ var sys=require("sys");
 var words=["he","she","his","hers"];
 var root=gen.createNode();
 words.forEach(function(w) {
-	gen.addWord(root,w,"{{"+w+"}}");
+	gen.addWord(root,w,JSON.stringify("{{"+w+"}}"));
 });
 gen.createAutomaton(root);
 var code=gen.exportAutomaton(root,"automaton").join("\r\n");
