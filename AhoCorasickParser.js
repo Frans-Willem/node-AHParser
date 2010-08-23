@@ -99,3 +99,10 @@ AhoCorasickParser.prototype.parse=function(buffer) {
 	return out;
 }
 exports.AhoCorasickParser=AhoCorasickParser;
+
+exports.createFunction=function(root) {
+	var parser=new AhoCorasickParser(root);
+	return function(b) {
+		return parser.parse(b);
+	}
+}

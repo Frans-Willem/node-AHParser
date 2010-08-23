@@ -1,5 +1,7 @@
 function createNode() {
-	return [];
+	var ret=[];
+	ret.input=[];
+	return ret;
 }
 
 function addWord(root,word,value) {
@@ -8,6 +10,7 @@ function addWord(root,word,value) {
 		next=root[word.charCodeAt(index)];
 		if (!next) {
 			next=root[word.charCodeAt(index)]=createNode();
+			next.input=root.input.concat([word.charCodeAt(index)]);
 		}
 		root=next;
 	}
@@ -92,7 +95,7 @@ function outputAutomaton(nodes,name) {
 	ret.push("function "+name+"() {");
 	for (i=0; i<nodes.length; i++) {
 		n=nodes[i];
-		ret.push("\tfunction node"+i+"(data,cbRoot) {");
+		ret.push("\tfunction node_"+n.input.join("_")+"(data,cbRoot) {");
 		if (i===0) {
 			ret.push("\t\tcbRoot();");
 		}
@@ -102,22 +105,22 @@ function outputAutomaton(nodes,name) {
 			if (g===n && i===0) {
 				continue;
 			}
-			ret.push("\t\t\tcase "+a+": return node"+g.index+";");
+			ret.push("\t\t\tcase "+a+": return node_"+g.input.join("_")+";");
 		}}
 		if (i===0) {
-			ret.push("\t\t\tdefault: return node0;");
+			ret.push("\t\t\tdefault: return node_"+n.input.join("_")+";");
 		} else {
-			ret.push("\t\t\tdefault: return node"+n.fail.index+"(data,cbRoot);");
+			ret.push("\t\t\tdefault: return node_"+n.fail.input.join("_")+"(data,cbRoot);");
 		}
 		ret.push
 		ret.push("\t\t}");
 		ret.push("\t}");
 		if (n.out) {
-			ret.push("\tnode"+n.index+".used="+Math.max.apply(Math,n.out.map(function(x) { return x.length; }))+";");
-			ret.push("\tnode"+n.index+".out=["+n.out.map(function(x) { return x.value; }).join(",")+"];");
+			ret.push("\tnode_"+n.input.join("_")+".used="+Math.max.apply(Math,n.out.map(function(x) { return x.length; }))+";");
+			ret.push("\tnode_"+n.input.join("_")+".out=["+n.out.map(function(x) { return x.value; }).join(",")+"];");
 		}
 	}
-	ret.push("\treturn node0;");
+	ret.push("\treturn node_"+nodes[0].input.join("_")+";");
 	ret.push("}");
 	return ret;
 }
